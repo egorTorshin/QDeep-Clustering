@@ -14,8 +14,7 @@
 import math
 
 import dwavebinarycsp
-import dwave.inspector
-from dwave.system import EmbeddingComposite, DWaveSampler
+from neal import SimulatedAnnealingSampler
 
 from utilities import get_groupings, visualize_groupings, visualize_scatterplot
 
@@ -107,16 +106,15 @@ def cluster_points(scattered_points, filename, problem_inspector):
             bqm.add_interaction(coord0.g, coord1.b, weight)
 
     # Submit problem to D-Wave sampler
-    sampler = EmbeddingComposite(DWaveSampler())
+    sampler = SimulatedAnnealingSampler()
     sampleset = sampler.sample(bqm,
                                chain_strength=4,
                                num_reads=1000,
                                label='Example - Clustering')
+    sampleset.id = "clustering-sample-set"
+
     best_sample = sampleset.first.sample
 
-    # Visualize graph problem
-    if problem_inspector:
-        dwave.inspector.show(bqm, sampleset)
 
     # Visualize solution
     groupings = get_groupings(best_sample)
